@@ -106,6 +106,7 @@ add_subdirectory(thirdparty/yaml-cpp-yaml-cpp-20171024)
 add_subdirectory(thirdparty/civetweb-1.9.1 EXCLUDE_FROM_ALL)
 include_directories(thirdparty/concurrentqueue)
 include_directories(thirdparty/yaml-cpp-yaml-cpp-20171024/include)
+include_directories(thirdparty/rapidjson-1.1.0/include)
 add_subdirectory(libminifi)
 
 if (EXCLUDE_BOOST)

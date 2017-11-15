@@ -52,7 +52,7 @@ endif()
 
 include_directories(../thirdparty/spdlog-20170710/include)
 include_directories(../thirdparty/yaml-cpp-yaml-cpp-20171024/include)
-
+include_directories(../thirdparty/rapidjson-1.1.0/include)
 include_directories(../thirdparty/civetweb-1.9.1/include)
 include_directories(../thirdparty/jsoncpp/include)
 include_directories(../thirdparty/concurrentqueue/)
