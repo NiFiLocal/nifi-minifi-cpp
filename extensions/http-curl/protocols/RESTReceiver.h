@@ -19,8 +19,6 @@
 #define LIBMINIFI_INCLUDE_C2_RESTRCVR_H_
 
 #include "RESTSender.h"
-#include "json/json.h"
-#include "json/writer.h"
 #include <string>
 #include <mutex>
 #include "core/Resource.h"
