@@ -44,7 +44,7 @@ if (NOT PNG_FOUND)
     message(FATAL_ERROR "A compatible PNG library is required to build GetUSBCamera.")
 endif()
 
-include_directories(../../libminifi/include  ../../libminifi/include/core  ../../thirdparty/spdlog-20170710/include ../../thirdparty/concurrentqueue ../../thirdparty/yaml-cpp-yaml-cpp-0.5.3/include ../../thirdparty/civetweb-1.9.1/include ../../thirdparty/jsoncpp/include  ../../thirdparty/) 
+include_directories(../../libminifi/include  ../../libminifi/include/core  ../../thirdparty/spdlog-20170710/include ../../thirdparty/concurrentqueue ../../thirdparty/yaml-cpp-yaml-cpp-0.5.3/include ../../thirdparty/civetweb-1.9.1/include ../../thirdparty/) 
 
 include_directories(../../thirdparty/libuvc-0.0.6/include)
 
@@ -61,7 +61,6 @@ endif()
 
 find_package(UUID REQUIRED)
 target_link_libraries(minifi-usb-camera-extensions ${LIBMINIFI} ${UUID_LIBRARIES} ${JSONCPP_LIB})
-add_dependencies(minifi-usb-camera-extensions jsoncpp_project)
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 target_link_libraries(minifi-usb-camera-extensions ${CMAKE_DL_LIBS} )

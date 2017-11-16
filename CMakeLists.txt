@@ -84,22 +84,6 @@ file(GLOB SPD_SOURCES "thirdparty/spdlog-20170710/include/spdlog/*")
 
 include(ExternalProject)
 
-# Setup Jsoncpp as an external project
-set(JSONCPP_LIB_DIR "${CMAKE_CURRENT_BINARY_DIR}/jsoncpp")
-
-externalproject_add(jsoncpp_project
-        SOURCE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp
-        CMAKE_ARGS
-        "-G${CMAKE_GENERATOR}"
-        "-DCMAKE_INSTALL_LIBDIR=${JSONCPP_LIB_DIR}/lib"
-        "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
-        "-DCMAKE_INSTALL_PREFIX=${JSONCPP_LIB_DIR}"
-        )
-
-set(prefix "lib")
-set(suffix ".a")
-set(JSONCPP_LIB "${JSONCPP_LIB_DIR}/lib/${prefix}jsoncpp${suffix}")
-
 set(CIVETWEB_ENABLE_SSL_DYNAMIC_LOADING OFF CACHE BOOL "Disable dynamic SSL library loading")
 set(CIVETWEB_ENABLE_CXX ON CACHE BOOL "Enable civet C++ library")
 add_subdirectory(thirdparty/yaml-cpp-yaml-cpp-20171024)
