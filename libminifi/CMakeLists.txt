@@ -52,8 +52,6 @@ endif()
 
 include_directories(../thirdparty/spdlog-20170710/include)
 include_directories(../thirdparty/yaml-cpp-yaml-cpp-20171024/include)
-
-include_directories(../thirdparty/civetweb-1.9.1/include)
 include_directories(../thirdparty/jsoncpp/include)
 include_directories(../thirdparty/concurrentqueue/)
 include_directories(include)
@@ -69,7 +67,7 @@ file(GLOB SPD_SOURCES "../thirdparty/spdlog-20170710/include/spdlog/*")
 add_library(spdlog STATIC ${SPD_SOURCES})
 add_library(core-minifi STATIC ${SOURCES})
 add_dependencies(core-minifi jsoncpp_project)
-target_link_libraries(core-minifi ${UUID_LIBRARIES} ${JSONCPP_LIB} yaml-cpp )
+target_link_libraries(core-minifi ${UUID_LIBRARIES} ${JSONCPP_LIB} yaml-cpp dl)
 
 find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
