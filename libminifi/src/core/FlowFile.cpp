@@ -127,6 +127,10 @@ void FlowFile::clearStashClaim(const std::string &key) {
   stashedContent_.erase(key);
 }
 
+void FlowFile::clearStashClaims() {
+  stashedContent_.clear();
+}
+
 bool FlowFile::hasStashClaim(const std::string &key) {
   return stashedContent_.find(key) != stashedContent_.end();
 }

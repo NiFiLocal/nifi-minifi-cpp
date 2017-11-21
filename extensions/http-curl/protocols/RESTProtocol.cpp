@@ -26,6 +26,10 @@
 #include <vector>
 #include <list>
 
+#include "utils/RapidJsonUtils.h"
+
+using utils::RapidJsonUtils;
+
 namespace org {
 namespace apache {
 namespace nifi {
@@ -68,8 +72,6 @@ const C2Payload RESTProtocol::parseJsonResponse(const C2Payload &payload, const 
               new_command.ident = std::to_string(request["operationid"].GetInt64());
             else if (request["operationid"].IsString())
               new_command.ident = request["operationid"].GetString();
-            else
-              throw(Exception(SITE2SITE_EXCEPTION, "Invalid type for operationid"));
 
             nested_payload.setIdentifier(new_command.ident);
           }
@@ -93,24 +95,6 @@ const C2Payload RESTProtocol::parseJsonResponse(const C2Payload &payload, const 
   return std::move(C2Payload(payload.getOperation(), state::UpdateState::READ_ERROR, true));
 }
 
-void setJsonStr(const std::string& key, const std::string& value, rapidjson::Value& parent, rapidjson::Document::AllocatorType& alloc) { // NOLINT
-  rapidjson::Value keyVal;
-  rapidjson::Value valueVal;
-  const char* c_key = key.c_str();
-  const char* c_val = value.c_str();
-
-  keyVal.SetString(c_key, key.length()), alloc;
-  valueVal.SetString(c_val, value.length(), alloc);
-
-  parent.AddMember(keyVal, valueVal, alloc);
-}
-
-rapidjson::Value getStringValue(const std::string& value, rapidjson::Document::AllocatorType& alloc) { // NOLINT
-  rapidjson::Value Val;
-  Val.SetString(value.c_str(), value.length(), alloc);
-  return Val;
-}
-
 void RESTProtocol::mergePayloadContent(rapidjson::Value &target, const C2Payload &payload, rapidjson::Document::AllocatorType &alloc) {
   const std::vector<C2ContentResponse> &content = payload.getContent();
 
@@ -121,15 +105,15 @@ void RESTProtocol::mergePayloadContent(rapidjson::Value &target, const C2Payload
     if (payload_content.op == payload.getOperation()) {
       for (auto content : payload_content.operation_arguments) {
         if (payload_content.operation_arguments.size() == 1 && payload_content.name == content.first) {
-          setJsonStr(payload_content.name, content.second, target, alloc);
+          RapidJsonUtils::setJsonStr(payload_content.name, content.second, target, alloc);
           use_sub_option = false;
         } else {
-          setJsonStr(content.first, content.second, payload_content_values, alloc);
+          RapidJsonUtils::setJsonStr(content.first, content.second, payload_content_values, alloc);
         }
       }
     }
     if (use_sub_option) {
-      rapidjson::Value sub_key = getStringValue(payload_content.name, alloc);
+      rapidjson::Value sub_key = RapidJsonUtils::getStringValue(payload_content.name, alloc);
       target.AddMember(sub_key, payload_content_values, alloc);
     }
   }
@@ -146,23 +130,22 @@ std::string RESTProtocol::serializeJsonRootPayload(const C2Payload& payload) {
 
   std::string operationid = payload.getIdentifier();
   if (operationid.length() > 0) {
-    rapidjson::Value operationIdVal = getStringValue(operationid, alloc);
+    rapidjson::Value operationIdVal = RapidJsonUtils::getStringValue(operationid, alloc);
     json_payload.AddMember("operationid", operationIdVal, alloc);
   }
 
   mergePayloadContent(json_payload, payload, alloc);
 
   for (const auto &nested_payload : payload.getNestedPayloads()) {
-    rapidjson::Value np_key = getStringValue(nested_payload.getLabel(), alloc);
+    rapidjson::Value np_key = RapidJsonUtils::getStringValue(nested_payload.getLabel(), alloc);
     rapidjson::Value np_value = serializeJsonPayload(nested_payload, alloc);
     json_payload.AddMember(np_key, np_value, alloc);
   }
 
   rapidjson::StringBuffer buffer;
-  rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
   json_payload.Accept(writer);
-  
-  // std::string ret = ;
+
   return buffer.GetString();
 }
 
@@ -180,7 +163,7 @@ rapidjson::Value RESTProtocol::serializeJsonPayload(const C2Payload &payload, ra
   // child_vector is Pair<string, vector<Value*>>
   for (auto child_vector : children) {
     rapidjson::Value children_json;
-    rapidjson::Value newMemberKey = getStringValue(child_vector.first, alloc);
+    rapidjson::Value newMemberKey = RapidJsonUtils::getStringValue(child_vector.first, alloc);
 
     if (child_vector.second.size() > 1) {
       children_json.SetArray();

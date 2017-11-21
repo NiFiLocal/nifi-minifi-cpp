@@ -44,7 +44,8 @@ namespace processors {
 std::shared_ptr<utils::IdGenerator> FocusArchiveEntry::id_generator_ = utils::IdGenerator::getIdGenerator();
 
 core::Property FocusArchiveEntry::Path("Path", "The path within the archive to focus (\"/\" to focus the total archive)", "");
-core::Relationship FocusArchiveEntry::Success("success", "success operational on the flow record");
+core::Relationship FocusArchiveEntry::Success("success", "success operation on the flow record");
+core::Relationship FocusArchiveEntry::Failure("failure", "failure operation on the flow record");
 
 bool FocusArchiveEntry::set_or_update_attr(std::shared_ptr<core::FlowFile> flowFile, const std::string& key, const std::string& value) const {
   if (flowFile->updateAttribute(key, value))
@@ -61,6 +62,7 @@ void FocusArchiveEntry::initialize() {
   //! Set the supported relationships
   std::set<core::Relationship> relationships;
   relationships.insert(Success);
+  relationships.insert(Failure);
   setSupportedRelationships(relationships);
 }
 
@@ -81,6 +83,12 @@ void FocusArchiveEntry::onTrigger(core::ProcessContext *context, core::ProcessSe
 
   ReadCallback cb(this, &file_man, &archiveMetadata);
   session->read(flowFile, &cb);
+
+  char keepKey[37];
+  uuid_t keepKeyUuid;
+  id_generator_->generate(keepKeyUuid);
+  uuid_unparse_lower(keepKeyUuid, keepKey);
+  session->stash(keepKey, flowFile);
 
   // For each extracted entry, import & stash to key
   std::string targetEntryStashKey;
@@ -107,10 +115,15 @@ void FocusArchiveEntry::onTrigger(core::ProcessContext *context, core::ProcessSe
 
   // Restore target archive entry
   if (targetEntryStashKey != "") {
+    flowFile->clearStashClaim(keepKey);
     session->restore(targetEntryStashKey, flowFile);
   } else {
-    logger_->log_warn("FocusArchiveEntry failed to locate target entry: %s",
-                      archiveMetadata.focusedEntry.c_str());
+    logger_->log_error("FocusArchiveEntry failed to locate target entry: %s",
+                       archiveMetadata.focusedEntry.c_str());
+    session->restore(keepKey, flowFile);
+    flowFile->clearStashClaims();
+    session->transfer(flowFile, Failure);
+    return;
   }
 
   // Set new/updated lens stack to attribute
@@ -124,15 +137,13 @@ void FocusArchiveEntry::onTrigger(core::ProcessContext *context, core::ProcessSe
       try {
         archiveStack.loadJsonString(existingLensStack);
       } catch (Exception &exception) {
-        logger_->log_debug(exception.what());
-        context->yield();
+        logger_->log_error(exception.what());
+        session->transfer(flowFile, Failure);
         return;
       }
     }
 
     archiveStack.push(archiveMetadata);
-    //logger_->log_debug(archiveMetadata.toJsonString());
-
     std::string stackStr = archiveStack.toJsonString();
   
     if (!flowFile->updateAttribute("lens.archive.stack", stackStr)) {
@@ -260,9 +271,7 @@ int64_t FocusArchiveEntry::ReadCallback::process(std::shared_ptr<io::BaseStream>
   return nlen;
 }
 
-FocusArchiveEntry::ReadCallback::ReadCallback(core::Processor *processor,
-                                              fileutils::FileManager *file_man,
-                                              ArchiveMetadata *archiveMetadata)
+FocusArchiveEntry::ReadCallback::ReadCallback(core::Processor *processor, fileutils::FileManager *file_man, ArchiveMetadata *archiveMetadata)
     : proc_(processor), file_man_(file_man) {
   logger_ = logging::LoggerFactory<FocusArchiveEntry>::getLogger();
   _archiveMetadata = archiveMetadata;

@@ -66,6 +66,11 @@ class FlowFile : public core::Connectable {
   void clearStashClaim(const std::string &key);
 
   /**
+   * Clear the resource claim at the given stash key
+   */
+  void clearStashClaims();
+
+  /**
    * Return true if the given stash claim exists
    */
   bool hasStashClaim(const std::string &key);

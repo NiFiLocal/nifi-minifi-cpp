@@ -21,7 +21,6 @@
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
-#include "rapidjson/prettywriter.h"
 
 #include <string>
 #include <mutex>
@@ -63,7 +62,7 @@ class RESTProtocol {
   virtual rapidjson::Value serializeJsonPayload(const C2Payload &payload, rapidjson::Document::AllocatorType &alloc);
 
   virtual std::string serializeJsonRootPayload(const C2Payload& payload);
-  
+
   virtual void mergePayloadContent(rapidjson::Value &target, const C2Payload &payload, rapidjson::Document::AllocatorType &alloc);
 
   virtual const C2Payload parseJsonResponse(const C2Payload &payload, const std::vector<char> &response);

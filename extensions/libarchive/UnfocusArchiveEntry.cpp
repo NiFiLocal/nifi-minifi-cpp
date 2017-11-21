@@ -38,7 +38,8 @@ namespace nifi {
 namespace minifi {
 namespace processors {
 
-core::Relationship UnfocusArchiveEntry::Success("success", "success operational on the flow record");
+core::Relationship UnfocusArchiveEntry::Success("success", "success operation on the flow record");
+core::Relationship UnfocusArchiveEntry::Failure("failure", "failure operation on the flow record");
 
 bool UnfocusArchiveEntry::set_or_update_attr(std::shared_ptr<core::FlowFile> flowFile, const std::string& key, const std::string& value) const {
   if (flowFile->updateAttribute(key, value))
@@ -54,6 +55,7 @@ void UnfocusArchiveEntry::initialize() {
   //! Set the supported relationships
   std::set<core::Relationship> relationships;
   relationships.insert(Success);
+  relationships.insert(Failure);
   setSupportedRelationships(relationships);
 }
 
@@ -80,13 +82,13 @@ void UnfocusArchiveEntry::onTrigger(core::ProcessContext *context, core::Process
         try {
           archiveStack.loadJsonString(existingLensStack);
         } catch (Exception &exception) {
-          logger_->log_debug(exception.what());
-          context->yield();
+          logger_->log_error(exception.what());
+          session->transfer(flowFile, Failure);
           return;
         }
       } else {
         logger_->log_error("UnfocusArchiveEntry lens metadata not found");
-        context->yield();
+        session->transfer(flowFile, Failure);
         return;
       }
     }

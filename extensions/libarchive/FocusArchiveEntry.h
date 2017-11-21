@@ -61,6 +61,7 @@ class FocusArchiveEntry : public core::Processor {
   static core::Property Path;
   //! Supported Relationships
   static core::Relationship Success;
+  static core::Relationship Failure;
 
   bool set_or_update_attr(std::shared_ptr<core::FlowFile>, const std::string&, const std::string&) const;
 

@@ -132,7 +132,7 @@ void ManipulateArchive::onTrigger(core::ProcessContext *context, core::ProcessSe
     auto target_position = archiveMetadata.find(targetEntry_);
 
     if (target_position == entries_end && operation_ != OPERATION_TOUCH) {
-        logger_->log_warn("ManipulateArchive could not find entry %s to %s!",
+        logger_->log_error("ManipulateArchive could not find entry %s to %s!",
                           targetEntry_, operation_);
         session->transfer(flowFile, Failure);
         return;
@@ -144,8 +144,8 @@ void ManipulateArchive::onTrigger(core::ProcessContext *context, core::ProcessSe
     if (!destination_.empty()) {
         auto dest_position = archiveMetadata.find(destination_);
         if (dest_position != entries_end) {
-            logger_->log_warn("ManipulateArchive cannot perform %s to existing destination_ %s!",
-                              operation_, destination_);
+            logger_->log_error("ManipulateArchive cannot perform %s to existing destination_ %s!",
+                               operation_, destination_);
             session->transfer(flowFile, Failure);
             return;
         }

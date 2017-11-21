@@ -60,6 +60,7 @@ class UnfocusArchiveEntry : public core::Processor {
   static constexpr char const* ProcessorName = "UnfocusArchiveEntry";
   //! Supported Relationships
   static core::Relationship Success;
+  static core::Relationship Failure;
 
   bool set_or_update_attr(std::shared_ptr<core::FlowFile>, const std::string&, const std::string&) const;
 
