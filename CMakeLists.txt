@@ -86,8 +86,12 @@ include(ExternalProject)
 
 set(CIVETWEB_ENABLE_SSL_DYNAMIC_LOADING OFF CACHE BOOL "Disable dynamic SSL library loading")
 set(CIVETWEB_ENABLE_CXX ON CACHE BOOL "Enable civet C++ library")
+SET(WITH_TESTS OFF CACHE BOOL "Build RocksDB library (not repo) tests")
+set(CIVET_THIRDPARTY_ROOT "${CMAKE_SOURCE_DIR}/thirdparty/civetweb-1.10/" CACHE STRING "Path to CivetWeb root")
+set(ROCKSDB_THIRDPARTY_ROOT "${CMAKE_SOURCE_DIR}/thirdparty/rocksdb/" CACHE STRING "Path to RocksDB root")
 add_subdirectory(thirdparty/yaml-cpp-yaml-cpp-20171024)
-add_subdirectory(thirdparty/civetweb-1.9.1 EXCLUDE_FROM_ALL)
+set(BUILD_CIVET_TESTING OFF)
+add_subdirectory("${CIVET_THIRDPARTY_ROOT}" EXCLUDE_FROM_ALL)
 include_directories(thirdparty/concurrentqueue)
 include_directories(thirdparty/yaml-cpp-yaml-cpp-20171024/include)
 include_directories(thirdparty/rapidjson-1.1.0/include)
@@ -110,7 +114,7 @@ endif()
 
 option(DISABLE_ROCKSDB "Disables the RocksDB extension." OFF)
 if (NOT DISABLE_ROCKSDB)
-	createExtension(ROCKSDB-REPOS "ROCKSDB REPOS" "This Enables persistent provenance, flowfile, and content repositories using RocksDB" "extensions/rocksdb-repos" "${TEST_DIR}/rocksdb-tests" BUILD_RD "thirdparty/rocksdb/")
+	createExtension(ROCKSDB-REPOS "ROCKSDB REPOS" "This Enables persistent provenance, flowfile, and content repositories using RocksDB" "extensions/rocksdb-repos" "${TEST_DIR}/rocksdb-tests" BUILD_RD "${ROCKSDB_THIRDPARTY_ROOT}")
 endif()
 
 ## Create LibArchive Extension
