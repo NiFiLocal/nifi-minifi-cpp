@@ -25,13 +25,13 @@ include_directories(${CMAKE_SOURCE_DIR}/libminifi/include
                     ${CMAKE_SOURCE_DIR}/thirdparty/spdlog-20170710/include
                     ${CMAKE_SOURCE_DIR}/thirdparty/concurrentqueue
                     ${CMAKE_SOURCE_DIR}/thirdparty/yaml-cpp-yaml-cpp-0.5.3/include
-                    ${CMAKE_SOURCE_DIR}/thirdparty/civetweb-1.9.1/include
-                    ${CMAKE_SOURCE_DIR}/thirdparty/jsoncpp/include
+                    ${CIVET_THIRDPARTY_ROOT}/include
+                    ${CMAKE_SOURCE_DIR}/thirdparty/rapidjson-1.1.0/include
                     ${CMAKE_SOURCE_DIR}/thirdparty/
                     ./include)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/civetweb-1.9.1
-                 ${CMAKE_BINARY_DIR}/thirdparty/civetweb-1.9.1
+add_subdirectory(${CIVET_THIRDPARTY_ROOT}
+                 ${CMAKE_BINARY_DIR}/${CIVET_THIRDPARTY_ROOT}
                  EXCLUDE_FROM_ALL)
 
 file(GLOB SOURCES  "*.cpp")

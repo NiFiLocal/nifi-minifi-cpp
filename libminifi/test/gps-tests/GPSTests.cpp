@@ -35,6 +35,7 @@
 #include "core/ProcessorNode.h"
 #include <iostream>
 #include "GetGPS.h"
+#include "processors/GetFile.h"
 
 
 TEST_CASE("GPSD Create", "[gpsdtest1]") {

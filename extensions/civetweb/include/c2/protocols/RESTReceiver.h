@@ -18,7 +18,6 @@
 #ifndef LIBMINIFI_INCLUDE_C2_RESTRCVR_H_
 #define LIBMINIFI_INCLUDE_C2_RESTRCVR_H_
 
-#include "RESTSender.h"
 #include <string>
 #include <mutex>
 #include "core/Resource.h"

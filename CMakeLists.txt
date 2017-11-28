@@ -168,7 +168,7 @@ endif()
 
 ## Bustache/template extensions
 option(ENABLE_BUSTACHE "Enables Bustache (ApplyTemplate) support." OFF)
-if (DISABLE_BUSTACHE)
+if (ENABLE_BUSTACHE)
     createExtension(BUSTACHE-EXTENSIONS "BUSTACHE EXTENSIONS" "This enables bustache functionality including ApplyTemplate." "extensions/bustache" "${TEST_DIR}/bustache-tests" "TRUE" "thirdparty/bustache")
 endif()
 

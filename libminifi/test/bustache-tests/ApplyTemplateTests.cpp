@@ -36,6 +36,7 @@
 
 #include "ApplyTemplate.h"
 #include "processors/GetFile.h"
+#include "processors/PutFile.h"
 #include "processors/ExtractText.h"
 
 const char* TEMPLATE = "TemplateBegins\n{{ ExampleAttribute }}\nTemplateEnds";
