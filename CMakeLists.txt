@@ -90,8 +90,7 @@ SET(WITH_TESTS OFF CACHE BOOL "Build RocksDB library (not repo) tests")
 set(CIVET_THIRDPARTY_ROOT "${CMAKE_SOURCE_DIR}/thirdparty/civetweb-1.10/" CACHE STRING "Path to CivetWeb root")
 set(ROCKSDB_THIRDPARTY_ROOT "${CMAKE_SOURCE_DIR}/thirdparty/rocksdb/" CACHE STRING "Path to RocksDB root")
 add_subdirectory(thirdparty/yaml-cpp-yaml-cpp-20171024)
-set(BUILD_CIVET_TESTING OFF)
-add_subdirectory("${CIVET_THIRDPARTY_ROOT}" EXCLUDE_FROM_ALL)
+
 include_directories(thirdparty/concurrentqueue)
 include_directories(thirdparty/yaml-cpp-yaml-cpp-20171024/include)
 include_directories(thirdparty/rapidjson-1.1.0/include)
@@ -104,7 +103,12 @@ endif(EXCLUDE_BOOST)
 #### EXTENSION
 option(DISABLE_CURL "Disables libCurl Properties." OFF)
 if (NOT DISABLE_CURL)
-	createExtension(HTTP-CURL "HTTP CURL" "This enables RESTProtocol, InvokeHTTP, and the HTTPClient for Site to Site" "extensions/http-curl" "${TEST_DIR}/curl-tests")
+	createExtension(HTTP-CURL "HTTP CURL" "This enables RESTProtocol, InvokeHTTP, and the HTTPClient for Site to Site" "extensions/http-curl")
+endif()
+
+option(DISABLE_CIVET "Disables CivetWeb components." OFF)
+if (NOT DISABLE_CIVET)
+createExtension(CIVETWEB CIVETWEB "This enables ListenHTTP and several cURL tests" "extensions/civetweb")
 endif()
 
 ## Add the rocks DB extension
@@ -211,6 +215,9 @@ include(CPack)
 
 if (NOT SKIP_TESTS)
 	include(BuildTests)
+    if (NOT (DISABLE_CURL OR DISABLE_CIVET))
+            add_subdirectory(extensions/civet_curl_tests)
+    endif()
 endif()
 
 include(BuildDocs)

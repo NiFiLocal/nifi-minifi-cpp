@@ -22,7 +22,7 @@
 #include <string>
 #include <mutex>
 #include "core/Resource.h"
-#include "RESTProtocol.h"
+#include "c2/protocols/RESTProtocol.h"
 #include "CivetServer.h"
 #include "c2/C2Protocol.h"
 #include "controllers/SSLContextService.h"
